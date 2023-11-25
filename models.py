@@ -1,4 +1,3 @@
-import sqlite3
 
 # connection = sqlite3.connect('BMS.db')
 # cursor = connection.cursor()
@@ -28,6 +27,8 @@ import sqlite3
 
 # # cursor.execute("INSERT INTO USERS VALUES(NULL,'BHARAT','BHARAT')")
 # connection.commit()
+
+import sqlite3
 
 connection = sqlite3.connect('blood bank.db')
 print("successfully connect database")
