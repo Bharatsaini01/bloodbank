@@ -1,75 +1,87 @@
-# import connector
+import sqlite3
 
-# def Login(username,password):
-#     connector.cursor.execute("SELECT PASSWORD FROM USERS WHERE USERNAME =  '{}'".format(username))
-#     PASSWORD = connector.cursor.fetchall()
-#     if password in PASSWORD[0]:
-#         return True
-#     else:
-#         return False
+# connection = sqlite3.connect('BMS.db')
+# cursor = connection.cursor()
 
-# def Register(username,password):
-#     if Login(username,password):
-#         print('username already access')
-#     else:
-#         connector.cursor.execute("INSERT INTO USERS VALUES(NULL,'{}','{}')".format(username,password))
-#         connector.connection.commit()
-#         print('Successfully Register')
-#         return True
+# cursor.execute("""CREATE TABLE IF NOT EXISTS DONOR
+#                (
+#                DONOR_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+#                DONOR_NAME TEXT NOT NULL,
+#                BLOOD_GROUP TEXT NOT NULL,
+#                MOBILE_NO INT UNIQUE
+#                )""")
 
-# def CREATE_DONOR_ACCOUNT():
-#     print("Enter Your Details")
-#     donor_name =    input("Donor Name  : ")
-#     blood_group =   input("Blood Group : ")
-#     mobile_no = int(input("Mobile No.  : "))
-#     connector.cursor.execute("SELECT MOBILE_NO FROM DONOR WHERE MOBILE_NO = {}".format(mobile_no))
-#     MOBILE_NO = connector.cursor.fetchall()
-#     if MOBILE_NO == []:
-#         MOBILE_NO = [()]
-#     if mobile_no in MOBILE_NO[0]:
-#         print("This Mobile No. already access")
-#     else:
-#         connector.cursor.execute("INSERT INTO DONOR VALUES(NULL,'{}','{}','{}')".format(donor_name,blood_group,mobile_no))
-#         connector.connection.commit()
-#         print('Successfully Create Donor Account')
+# cursor.execute("""CREATE TABLE IF NOT EXISTS RECEIVER
+#                (
+#                RECEIVER_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+#                RECEIVER_NAME TEXT NOT NULL,
+#                BLOOD_GROUP TEXT NOT NULL,
+#                MOBILE_NO INT UNIQUE
+#                ) """)
 
-# def CREATE_RECEIVER_ACCOUNT():
-#     print("Enter Your Details")
-#     receiver_name =  input("Receiver Name : ")
-#     blood_group =    input("Blood Group   : ")
-#     mobile_no =  int(input("Mobile No.    : "))
-#     connector.cursor.execute("SELECT MOBILE_NO FROM RECEIVER WHERE MOBILE_NO = {}".format(mobile_no))
-#     MOBILE_NO = connector.cursor.fetchall()
-#     if MOBILE_NO == []:
-#         MOBILE_NO = [()]
-#     if mobile_no == MOBILE_NO[0]:
-#         print("This Mobile No. already access")
-#     else:
-#         connector.cursor.execute("INSERT INTO RECEIVER VALUES(NULL,'{}','{}','{}')".format(receiver_name,blood_group,mobile_no))
-#         connector.connection.commit()
-#         print('Successfully Create Receiver Account')
+# cursor.execute("""CREATE TABLE IF NOT EXISTS USERS
+#                (
+#                REGISTER_ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+#                USERNAME VARCHAR(10) UNIQUE NOT NULL,
+#                PASSWORD TEXT NOT NULL
+#                ) """)
 
-# def create_account():
-#     print("Enter 1 for Create donor Account")
-#     print("Enter 2 for Create receiver Account")
-#     num = int(input("Enter a number: "))
-#     if num == 1:
-#         CREATE_DONOR_ACCOUNT()
-#     elif num == 2:
-#         CREATE_RECEIVER_ACCOUNT()
-#     else:
-#         print("Invailed number")
+# # cursor.execute("INSERT INTO USERS VALUES(NULL,'BHARAT','BHARAT')")
+# connection.commit()
 
-import connector
+connection = sqlite3.connect('blood bank.db')
+print("successfully connect database")
+cursur = connection.cursor()
 
-def heading():
-    print("welcome to blood bank")
-    print("Enter 1 for Log in")
-    print("Enter 2 for Register")
-    
-def login():
-    username = input("Enter your username : ")
-    password = input("Enter your password : ")
-    if connector.Check_user(username,password) :
-        print("log in successfully")
-    print("Invalid username and password")
+cursur.execute("""CREATE TABLE IF NOT EXISTS USERS
+               (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                NAME TEXT NOT NULL,
+                USERNAME TEXT NOT NULL UNIQUE,
+                PASSWORD TEXT NOT NULL,
+                ROLE INT NOT NULL DEFAULT 1
+               )""")
+
+cursur.execute("""CREATE TABLE IF NOT EXISTS BLOOD_DONATION
+               (
+                USERNAME TEXT NOT NULL UNIQUE,
+                BLOOD_GROUP TEXT NOT NULL,
+                DONATION_TIMES INT NOT NULL,
+                DONATION_DATE DATE NOT NULL,
+                LAST_DONATION_DATE DATE                
+               )""")
+
+print("successfully create table")
+#cursur.execute("INSERT INTO USERS(NAME,USERNAME,PASSWORD,ROLE) VALUES('Bharat','bharat','bharat123',2)")
+
+def Check_user_validation(username,password):
+    cursur.execute("SELECT PASSWORD FROM USERS WHERE USERNAME = (?)",[username])
+    Password = cursur.fetchone()
+    if password in Password :
+        return True
+    return False
+
+def check_user(username):
+    cursur.execute("SELECT * FROM USERS WHERE USERNAME = (?)",[username])
+    data = cursur.fetchone()
+    if data:
+        connection.close()
+        return False
+    return True
+
+def add_user(data):
+    cursur.execute("INSERT INTO USERS(NAME,USERNAME,PASSWORD,ROLE) VALUES(?,?,?,?)",data)
+    connection.commit()
+
+def get_donation_times(username):
+    cursur.execute("SELECT DONATION_TIMES FROM BLOOD_DONATION WHERE USERNAME = (?)",[username])
+    data = int(cursur.fetchone())
+    if data:
+        return data
+    return 0
+
+print(get_donation_times("ritik"))
+
+connection.commit()
+
+
