@@ -1,3 +1,4 @@
+import sqlite3
 
 # connection = sqlite3.connect('BMS.db')
 # cursor = connection.cursor()
@@ -28,8 +29,6 @@
 # # cursor.execute("INSERT INTO USERS VALUES(NULL,'BHARAT','BHARAT')")
 # connection.commit()
 
-import sqlite3
-
 connection = sqlite3.connect('blood bank.db')
 print("successfully connect database")
 cursur = connection.cursor()
@@ -52,6 +51,15 @@ cursur.execute("""CREATE TABLE IF NOT EXISTS BLOOD_DONATION
                 LAST_DONATION_DATE DATE                
                )""")
 
+cursur.execute("""CREATE TABLE IF NOT EXISTS BLOOD_RECEIVE
+               (
+                USERNAME TEXT NOT NULL UNIQUE,
+                BLOOD_GROUP TEXT NOT NULL,
+                RECEIVE_TIMES INT NOT NULL,
+                RECEIVE_DATE DATE NOT NULL,
+                LAST_RECEIVE_DATE DATE                
+               )""")
+
 print("successfully create table")
 #cursur.execute("INSERT INTO USERS(NAME,USERNAME,PASSWORD,ROLE) VALUES('Bharat','bharat','bharat123',2)")
 
@@ -66,22 +74,50 @@ def check_user(username):
     cursur.execute("SELECT * FROM USERS WHERE USERNAME = (?)",[username])
     data = cursur.fetchone()
     if data:
-        connection.close()
         return False
     return True
 
 def add_user(data):
     cursur.execute("INSERT INTO USERS(NAME,USERNAME,PASSWORD,ROLE) VALUES(?,?,?,?)",data)
     connection.commit()
+    connection.close()
 
-def get_donation_times(username):
-    cursur.execute("SELECT DONATION_TIMES FROM BLOOD_DONATION WHERE USERNAME = (?)",[username])
-    data = int(cursur.fetchone())
+def get_donation_times_and_pre_donation_date(username):
+    cursur.execute("SELECT DONATION_TIMES,DONATION_DATE FROM BLOOD_DONATION WHERE USERNAME = (?)",[username])
+    data = cursur.fetchall()
     if data:
-        return data
-    return 0
+        data1,data2 = data[0]
+        return data1+1,data2
+    else:
+        return 1,None
+    
 
-print(get_donation_times("ritik"))
+
+def add_user_donation(data):
+    cursur.execute("INSERT INTO BLOOD_DONATION VALUES(?,?,?,?,?)",data)
+    connection.commit()
+
+def update_user_donation(data):
+    cursur.execute("UPDATE BLOOD_DONATION SET (USERNAME,BLOOD_GROUP,DONATION_TIMES,DONATION_DATE,LAST_DONATION_DATE)=(?,?,?,?,?) WHERE USERNAME = (?)",data)
+    connection.commit()
+
+def get_receive_times_and_pre_receive_date(username):
+    cursur.execute("SELECT RECEIVE_TIMES,RECEIVE_DATE FROM BLOOD_RECEIVE WHERE USERNAME = (?)",[username])
+    data = cursur.fetchall()
+    if data:
+        data1,data2 = data[0]
+        return data1+1,data2
+    else:
+        return 1,None
+    
+def blood_receive(data):
+    cursur.execute("INSERT INTO BLOOD_RECEIVE VALUES(?,?,?,?,?)",data)
+    connection.commit()
+
+def update_user_receive(data):
+    cursur.execute("UPDATE BLOOD_RECEIVE SET (USERNAME,BLOOD_GROUP,RECEIVE_TIMES,RECEIVE_DATE,LAST_RECEIVE_DATE)=(?,?,?,?,?) WHERE USERNAME = (?)",data)
+    connection.commit()
+
 
 connection.commit()
 

@@ -72,16 +72,16 @@ def admin_func():
     print("Enter 2 for Blood Donate")
     print("Enter 3 for Blood receive")
     print("Enter 4 for All Users Information")
-    print("Enter 5 for Add User")
-    print("Enter 6 for Delete User")
+    print("Enter 5 for Delete User")
+    
     
 def admin_choice(choice):
     if choice == '1':
         user_registration()
     elif choice == '2':
-        print("blood donate")
+        blood_donate()
     elif choice == '3':
-        print("blood receive")
+        blood_receive()
     elif choice == '4':
         print("Users Information")
     elif choice == '5':
@@ -104,11 +104,40 @@ def user_registration():
         print("username already exists")
 
 def blood_donate():
-    username = input("Enter username")
-    currunt_date = datetime.datetime.now().date()
-    print(currunt_date)
+    username = input("Enter username : ")
+    blood_group = input("Enter blood group : ")
+    donation_times,predonation_date = models.get_donation_times_and_pre_donation_date(username)
+    donation_date = datetime.datetime.now().date()
+    data = (username,blood_group,donation_times,donation_date,predonation_date)
+    if models.check_user(username):
+        print("user not found!,please first Registration ")
+    elif donation_times == 1:
+        models.add_user_donation(data)
+        print("Donation successfully")
+    else:
+        data = (username,blood_group,donation_times,donation_date,predonation_date,username)
+        models.update_user_donation(data)
+        print("Donation successfully")
 
-blood_donate()
+def blood_receive():
+    username = input("Enter username : ")
+    blood_group = input("Enter blood group : ")
+    donation_times,predonation_date = models.get_donation_times_and_pre_donation_date(username)
+    receive_times,prereceive_date = models.get_receive_times_and_pre_receive_date(username)
+    receive_date = datetime.datetime.now().date()
+    check = donation_times - receive_times
+    data = (username,blood_group,receive_times,receive_date,prereceive_date)
+    if models.check_user(username):
+        print("user not found!,please first Registration ")
+    elif check == 0 and donation_times>=1:
+        print("You already max receive blood")
+    elif receive_times == 1:
+        models.blood_receive(data)
+        print("Receive successfully")
+    else:
+        data = (username,blood_group,receive_times,receive_date,prereceive_date,username)
+        models.update_user_receive(data)
+        print("Receive successfully")
     
 def login():
     username = input("Enter your username : ")
