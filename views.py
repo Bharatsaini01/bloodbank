@@ -83,9 +83,9 @@ def admin_choice(choice):
     elif choice == '3':
         blood_receive()
     elif choice == '4':
-        print("Users Information")
+        user_info()
     elif choice == '5':
-        print("delete User")
+        delete_user()
     else:
         print("Invalid choice")
 
@@ -138,6 +138,18 @@ def blood_receive():
         data = (username,blood_group,receive_times,receive_date,prereceive_date,username)
         models.update_user_receive(data)
         print("Receive successfully")
+
+def user_info():
+    data = models.user_info()
+    print("user id          name            username            role ")
+    for i in data:
+        user_id,name,username,password,role = i
+        print(user_id,"            ",name,"            ",username,"            ",role)
+
+def delete_user():
+    username = input("Enter username : ")
+    models.delete_user(username)
+    print("User delete successfully")
     
 def login():
     username = input("Enter your username : ")

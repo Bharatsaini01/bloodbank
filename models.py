@@ -118,6 +118,14 @@ def update_user_receive(data):
     cursur.execute("UPDATE BLOOD_RECEIVE SET (USERNAME,BLOOD_GROUP,RECEIVE_TIMES,RECEIVE_DATE,LAST_RECEIVE_DATE)=(?,?,?,?,?) WHERE USERNAME = (?)",data)
     connection.commit()
 
+def user_info():
+    cursur.execute("SELECT * FROM USERS")
+    data = cursur.fetchall()
+    return data
+
+def delete_user(username):
+    cursur.execute("DELETE FROM USERS WHERE USERNAME=(?) ",(username,))
+    connection.commit()
 
 connection.commit()
 
