@@ -73,7 +73,16 @@ def admin_func():
     print("Enter 3 for Blood receive")
     print("Enter 4 for All Users Information")
     print("Enter 5 for Delete User")
-    
+    print("Enter 6 for User Donation Information")
+    print("Enter 7 for User Receive Information")
+
+
+def user_func():
+    print("Enter 1 for Your Information")
+
+def user_choice(choice):
+    if choice == '1':
+       user_info()    
     
 def admin_choice(choice):
     if choice == '1':
@@ -83,9 +92,13 @@ def admin_choice(choice):
     elif choice == '3':
         blood_receive()
     elif choice == '4':
-        user_info()
+        users_info()
     elif choice == '5':
         delete_user()
+    elif choice == '6':
+        donation_info()
+    elif choice == '7':
+        receive_info()
     else:
         print("Invalid choice")
 
@@ -139,8 +152,8 @@ def blood_receive():
         models.update_user_receive(data)
         print("Receive successfully")
 
-def user_info():
-    data = models.user_info()
+def users_info():
+    data = models.users_info()
     print("user id          name            username            role ")
     for i in data:
         user_id,name,username,password,role = i
@@ -150,16 +163,46 @@ def delete_user():
     username = input("Enter username : ")
     models.delete_user(username)
     print("User delete successfully")
-    
+
+def donation_info():
+    username= input("Enter username : ")
+    data = models.donation_info(username)
+    print("Username          Blood Group            Donation Times           Donation Date            Last Donation Date ")
+    for i in data:
+        username,blood_group,donation_times,donation_date,last_donation_date = i
+        print(username,"            ",blood_group,"                 ",donation_times,"                       ",donation_date,"                  ",last_donation_date)
+
+def receive_info():
+    username= input("Enter username : ")
+    data = models.receive_info(username)
+    print("Username          Blood Group            Receive Times           Receive Date            Last Receive Date ")
+    for i in data:
+        username,blood_group,receive_times,receive_date,last_receive_date = i
+        print(username,"            ",blood_group,"                  ",receive_times,"                         ",receive_date,"                   ",last_receive_date)
+
+def user_info():
+    username = input("Enter your username : ")
+    data = models.user_info(username)
+    print("user id          name            username            role ")
+    user_id,name,username,password,role = data[0]
+    print(user_id,"            ",name,"            ",username,"            ",role)
+
 def login():
     username = input("Enter your username : ")
     password = input("Enter your password : ")
-    if models.Check_user_validation(username,password) :
-        print("log in successfully")
-        admin_func()
-        choice = input("Enter your choice : ")
-        admin_choice(choice)
-
+    role = models.Check_user_validation(username,password)
+    if role :
+        if role == 2:
+            print("log in successfully")
+            admin_func()
+            choice = input("Enter your choice : ")
+            admin_choice(choice)
+        else:
+            print(role)
+            print("log in successfully")
+            user_func()
+            choice = input("Enter your choice : ")
+            user_choice(choice)
 
     else:    
         print("Invalid username or password")

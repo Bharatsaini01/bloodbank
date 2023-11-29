@@ -31,5 +31,5 @@ def blood_bank():
         views.login()
     else:
         print("invalid choice")
-
+   
 blood_bank()

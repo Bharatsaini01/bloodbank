@@ -64,10 +64,10 @@ print("successfully create table")
 #cursur.execute("INSERT INTO USERS(NAME,USERNAME,PASSWORD,ROLE) VALUES('Bharat','bharat','bharat123',2)")
 
 def Check_user_validation(username,password):
-    cursur.execute("SELECT PASSWORD FROM USERS WHERE USERNAME = (?)",[username])
-    Password = cursur.fetchone()
+    cursur.execute("SELECT PASSWORD,ROLE FROM USERS WHERE USERNAME = (?)",[username])
+    Password,role = cursur.fetchone() 
     if password in Password :
-        return True
+        return role
     return False
 
 def check_user(username):
@@ -118,14 +118,29 @@ def update_user_receive(data):
     cursur.execute("UPDATE BLOOD_RECEIVE SET (USERNAME,BLOOD_GROUP,RECEIVE_TIMES,RECEIVE_DATE,LAST_RECEIVE_DATE)=(?,?,?,?,?) WHERE USERNAME = (?)",data)
     connection.commit()
 
-def user_info():
+def users_info():
     cursur.execute("SELECT * FROM USERS")
+    data = cursur.fetchall()
+    return data
+
+def user_info(username):
+    cursur.execute("SELECT * FROM USERS WHERE USERNAME=(?)",(username,))
     data = cursur.fetchall()
     return data
 
 def delete_user(username):
     cursur.execute("DELETE FROM USERS WHERE USERNAME=(?) ",(username,))
     connection.commit()
+
+def donation_info(username):
+    cursur.execute("SELECT * FROM BLOOD_DONATION WHERE USERNAME=(?)",(username,))
+    data = cursur.fetchall()
+    return data
+
+def receive_info(username):
+    cursur.execute("SELECT * FROM BLOOD_RECEIVE WHERE USERNAME=(?)",(username,))
+    data = cursur.fetchall()
+    return data
 
 connection.commit()
 
