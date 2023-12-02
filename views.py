@@ -62,6 +62,7 @@
 
 import models
 import datetime
+import controler
 
 def heading():
     print("welcome to blood bank")
@@ -82,7 +83,9 @@ def user_func():
 
 def user_choice(choice):
     if choice == '1':
-       user_info()    
+       user_info()  
+    else:
+        print("Invalid number")  
     
 def admin_choice(choice):
     if choice == '1':
@@ -110,11 +113,7 @@ def user_registration():
     password = input("Create password : ")
     role = input("Enter role : ")
     data = (name,username,password,role)
-    if models.check_user(username):
-        models.add_user(data)
-        print("Registration successfully")
-    else:
-        print("username already exists")
+    controler.user_registration(username,data)
 
 def blood_donate():
     username = input("Enter username : ")
@@ -122,15 +121,7 @@ def blood_donate():
     donation_times,predonation_date = models.get_donation_times_and_pre_donation_date(username)
     donation_date = datetime.datetime.now().date()
     data = (username,blood_group,donation_times,donation_date,predonation_date)
-    if models.check_user(username):
-        print("user not found!,please first Registration ")
-    elif donation_times == 1:
-        models.add_user_donation(data)
-        print("Donation successfully")
-    else:
-        data = (username,blood_group,donation_times,donation_date,predonation_date,username)
-        models.update_user_donation(data)
-        print("Donation successfully")
+    controler.blood_donate(username,donation_times,data)
 
 def blood_receive():
     username = input("Enter username : ")
@@ -140,24 +131,12 @@ def blood_receive():
     receive_date = datetime.datetime.now().date()
     check = donation_times - receive_times
     data = (username,blood_group,receive_times,receive_date,prereceive_date)
-    if models.check_user(username):
-        print("user not found!,please first Registration ")
-    elif check == 0 and donation_times>=1:
-        print("You already max receive blood")
-    elif receive_times == 1:
-        models.blood_receive(data)
-        print("Receive successfully")
-    else:
-        data = (username,blood_group,receive_times,receive_date,prereceive_date,username)
-        models.update_user_receive(data)
-        print("Receive successfully")
+    controler.blood_receive(username,check,donation_times,receive_times,data)
 
 def users_info():
     data = models.users_info()
     print("user id          name            username            role ")
-    for i in data:
-        user_id,name,username,password,role = i
-        print(user_id,"            ",name,"            ",username,"            ",role)
+    controler.user_info(data)
 
 def delete_user():
     username = input("Enter username : ")
@@ -168,17 +147,13 @@ def donation_info():
     username= input("Enter username : ")
     data = models.donation_info(username)
     print("Username          Blood Group            Donation Times           Donation Date            Last Donation Date ")
-    for i in data:
-        username,blood_group,donation_times,donation_date,last_donation_date = i
-        print(username,"            ",blood_group,"                 ",donation_times,"                       ",donation_date,"                  ",last_donation_date)
+    controler.donation_info(data)
 
 def receive_info():
     username= input("Enter username : ")
     data = models.receive_info(username)
     print("Username          Blood Group            Receive Times           Receive Date            Last Receive Date ")
-    for i in data:
-        username,blood_group,receive_times,receive_date,last_receive_date = i
-        print(username,"            ",blood_group,"                  ",receive_times,"                         ",receive_date,"                   ",last_receive_date)
+    controler.receive_info(data)
 
 def user_info():
     username = input("Enter your username : ")
@@ -206,3 +181,14 @@ def login():
 
     else:    
         print("Invalid username or password")
+
+
+def blood_bank():
+    heading()
+    n = input("Enter Your Choice : ")
+    if n == '1':
+        login()
+    else:
+        print("invalid choice")
+   
+blood_bank()
